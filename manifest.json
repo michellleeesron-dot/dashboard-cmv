@@ -1,0 +1,35 @@
+{
+  "name": "Dashboard CMV",
+  "short_name": "CMV",
+  "description": "Gestão de CMV, Perdas, Produtos e Caixa",
+  "start_url": "/dashboard-cmv/",
+  "scope": "/dashboard-cmv/",
+  "display": "standalone",
+  "background_color": "#06090F",
+  "theme_color": "#06090F",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%2306090F'/%3E%3Crect x='60' y='60' width='170' height='170' rx='20' fill='%2300D4A8'/%3E%3Crect x='282' y='60' width='170' height='170' rx='20' fill='%23FFB030'/%3E%3Crect x='60' y='282' width='170' height='170' rx='20' fill='%23FF4768'/%3E%3Crect x='282' y='282' width='170' height='170' rx='20' fill='%233D88FF'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "share_target": {
+    "action": "/dashboard-cmv/",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "pdf",
+          "accept": ["application/pdf", ".pdf"]
+        }
+      ]
+    }
+  }
+}
