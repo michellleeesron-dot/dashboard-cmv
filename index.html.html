@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dashboard CMV">
+<meta name="theme-color" content="#06090F">
+<title>Dashboard CMV</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.8.0/Recharts.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow-x:hidden;}
+body{background:#06090F;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#DDE9FF;overscroll-behavior:none;}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
+select option{background:#122038;color:#DDE9FF;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:#1C2E47;border-radius:2px;}
+.page{padding:14px 13px 92px;display:flex;flex-direction:column;gap:18px;}
+.card{background:#0C1523;border:1px solid rgba(80,140,230,0.1);border-radius:16px;}
+.lbl{font-size:10px;font-weight:700;letter-spacing:.12em;color:#4D6A96;text-transform:uppercase;margin-bottom:10px;padding-left:1px;}
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;}
+.mono{font-family:'Courier New',monospace;}
+.del-btn{background:transparent;border:none;color:#1C2E47;cursor:pointer;padding:6px;flex-shrink:0;display:flex;align-items:center;}
+.strip{display:flex;gap:7px;margin-bottom:4px;}
+.strip-item{flex:1;background:#122038;border-radius:12px;padding:10px 8px;border:1px solid rgba(80,140,230,0.1);}
+.strip-lbl{font-size:8px;color:#4D6A96;margin-bottom:4px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0C1523;border-top:1px solid rgba(80,140,230,0.1);display:flex;z-index:40;padding-bottom:env(safe-area-inset-bottom);}
+.nav-btn{flex:1;padding:8px 0 11px;background:transparent;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.nav-label{font-size:9px;font-weight:400;}
+.fab{position:fixed;bottom:74px;right:16px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#00D4A8,#00A882);border:none;color:#001F18;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:30;box-shadow:0 6px 24px rgba(0,212,168,0.45);font-size:26px;font-weight:300;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:50;display:flex;align-items:flex-end;justify-content:center;}
+.modal{background:#0C1523;border-radius:22px 22px 0 0;width:100%;padding:8px 18px 44px;max-height:90vh;overflow-y:auto;}
+.modal-handle{width:38px;height:4px;background:#1C2E47;border-radius:2px;margin:13px auto 18px;}
+.field-label{font-size:11px;color:#4D6A96;margin-bottom:4px;display:block;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+input,select{width:100%;background:#122038;border:1px solid rgba(80,140,230,0.12);border-radius:10px;padding:12px 14px;color:#DDE9FF;font-size:15px;outline:none;-webkit-appearance:none;appearance:none;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234D6A96' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+.save-btn{margin-top:20px;width:100%;padding:16px;background:linear-gradient(135deg,#00D4A8,#00A882);border:none;border-radius:14px;color:#001F18;font-size:15px;font-weight:700;cursor:pointer;}
+.filter-bar{display:flex;gap:6px;margin-bottom:12px;}
+.filter-btn{flex:1;padding:10px 4px;border-radius:10px;border:none;cursor:pointer;font-size:11px;font-weight:700;}
+.hdr{background:#0C1523;border-bottom:1px solid rgba(80,140,230,0.1);padding:14px 16px 12px;position:sticky;top:0;z-index:20;}
+.kpi3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.kpi3-item{border-radius:12px;padding:11px 9px;}
+.kpi3-lbl{font-size:8px;font-weight:700;letter-spacing:.1em;margin-bottom:5px;text-transform:uppercase;}
+.kpi2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.kpi-card{border-radius:14px;padding:13px 12px;}
+.kpi-lbl{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:9px;}
+.kpi-val{font-family:'Courier New',monospace;font-size:14px;font-weight:700;letter-spacing:-.5px;line-height:1;word-break:break-all;}
+.kpi-sub{font-size:9px;margin-top:5px;}
+.tipo-toggle{display:flex;gap:8px;}
+.tipo-btn{flex:1;padding:13px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;}
+.preview-box{border-radius:10px;padding:12px 14px;margin-top:2px;}
+.close-btn{background:#122038;border:1px solid rgba(80,140,230,0.1);border-radius:8px;padding:7px 9px;cursor:pointer;color:#4D6A96;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const {useState,useMemo}=React;
+const {BarChart,Bar,PieChart,Pie,Cell,AreaChart,Area,XAxis,YAxis,Tooltip,ResponsiveContainer,CartesianGrid,ReferenceLine}=Recharts;
+
+const C={bg:"#06090F",card:"#0C1523",card2:"#122038",border:"rgba(80,140,230,0.1)",teal:"#00D4A8",tealDim:"rgba(0,212,168,0.13)",red:"#FF4768",redDim:"rgba(255,71,104,0.13)",amber:"#FFB030",amberDim:"rgba(255,176,48,0.13)",blue:"#3D88FF",blueDim:"rgba(61,136,255,0.13)",orange:"#FF7B3F",orangeDim:"rgba(255,123,63,0.13)",text:"#DDE9FF",text2:"#4D6A96",text3:"#1C2E47"};
+const fmt=n=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(n||0);
+const pct=n=>`${((n||0)*100).toFixed(1)}%`;
+const LOJAS=["Loja A","Loja B","Loja C","Loja D"];
+const TIPOS_P=["Furto","Vencimento","Erro","Quebra"];
+const MESES=["Jan/25","Fev/25","Mar/25","Abr/25","Mai/25","Jun/25","Jul/25"];
+const PIE_COLORS=["#FF4768","#FFB030","#3D88FF","#00D4A8"];
+const CAT_E=["Venda","Empréstimo","Investimento","Outros créditos"];
+const CAT_S=["Fornecedor","Aluguel","Salário","Impostos","Energia","Marketing","Manutenção","Outros débitos"];
+
+const INIT_CMV=[{id:1,loja:"Loja A",mes:"Jan/25",produto:"Frango",custo:8.5,fat:15},{id:2,loja:"Loja A",mes:"Jan/25",produto:"Arroz 5kg",custo:3.2,fat:7},{id:3,loja:"Loja B",mes:"Jan/25",produto:"Feijão",custo:2.8,fat:6.5},{id:4,loja:"Loja B",mes:"Fev/25",produto:"Frango",custo:9,fat:16},{id:5,loja:"Loja C",mes:"Fev/25",produto:"Carne Bov.",custo:18,fat:35},{id:6,loja:"Loja C",mes:"Mar/25",produto:"Salmão",custo:22,fat:42},{id:7,loja:"Loja A",mes:"Mar/25",produto:"Ovos",custo:1.5,fat:4.2}];
+const INIT_PERDAS=[{id:1,loja:"Loja A",produto:"Frango",qtd:2,custo:8.5,tipo:"Vencimento"},{id:2,loja:"Loja B",produto:"Pão",qtd:5,custo:1.2,tipo:"Furto"},{id:3,loja:"Loja A",produto:"Iogurte",qtd:3,custo:3.5,tipo:"Erro"},{id:4,loja:"Loja C",produto:"Carne",qtd:1,custo:18,tipo:"Quebra"},{id:5,loja:"Loja B",produto:"Leite",qtd:4,custo:2.8,tipo:"Vencimento"}];
+const INIT_PRODS=[{id:1,nome:"Carne Bovina",vendas:2200,custo:1320,cat:"Proteína"},{id:2,nome:"Frango",vendas:1500,custo:850,cat:"Proteína"},{id:3,nome:"Arroz 5kg",vendas:900,custo:480,cat:"Grãos"},{id:4,nome:"Leite Integral",vendas:760,custo:420,cat:"Laticínio"},{id:5,nome:"Feijão Carioca",vendas:650,custo:350,cat:"Grãos"},{id:6,nome:"Macarrão",vendas:520,custo:280,cat:"Massas"},{id:7,nome:"Iogurte",vendas:430,custo:250,cat:"Laticínio"},{id:8,nome:"Pão Francês",vendas:380,custo:200,cat:"Padaria"}];
+const INIT_CAIXA=[{id:1,data:"03/01/25",desc:"Vendas do dia",cat:"Venda",tipo:"entrada",valor:1850},{id:2,data:"05/01/25",desc:"Pagto fornecedor",cat:"Fornecedor",tipo:"saida",valor:620},{id:3,data:"10/01/25",desc:"Aluguel Loja A",cat:"Aluguel",tipo:"saida",valor:2200},{id:4,data:"15/01/25",desc:"Vendas semana",cat:"Venda",tipo:"entrada",valor:4320},{id:5,data:"18/01/25",desc:"Folha de pagamento",cat:"Salário",tipo:"saida",valor:3100},{id:6,data:"22/01/25",desc:"Vendas semana",cat:"Venda",tipo:"entrada",valor:3870},{id:7,data:"28/01/25",desc:"SIMPLES Nacional",cat:"Impostos",tipo:"saida",valor:890},{id:8,data:"30/01/25",desc:"Fechamento mês",cat:"Venda",tipo:"entrada",valor:2100},{id:9,data:"04/02/25",desc:"Compra estoque",cat:"Fornecedor",tipo:"saida",valor:1450},{id:10,data:"10/02/25",desc:"Vendas semana",cat:"Venda",tipo:"entrada",valor:4700},{id:11,data:"14/02/25",desc:"Conta de energia",cat:"Energia",tipo:"saida",valor:380},{id:12,data:"20/02/25",desc:"Vendas semana",cat:"Venda",tipo:"entrada",valor:5100},{id:13,data:"25/02/25",desc:"Manutenção equip.",cat:"Manutenção",tipo:"saida",valor:460},{id:14,data:"05/03/25",desc:"Vendas do dia",cat:"Venda",tipo:"entrada",valor:2200},{id:15,data:"10/03/25",desc:"Compra estoque",cat:"Fornecedor",tipo:"saida",valor:1800},{id:16,data:"15/03/25",desc:"Vendas semana",cat:"Venda",tipo:"entrada",valor:5600},{id:17,data:"20/03/25",desc:"Folha de pagamento",cat:"Salário",tipo:"saida",valor:3100},{id:18,data:"25/03/25",desc:"Anúncios online",cat:"Marketing",tipo:"saida",valor:320},{id:19,data:"28/03/25",desc:"Vendas semana",cat:"Venda",tipo:"entrada",valor:4400},{id:20,data:"31/03/25",desc:"SIMPLES Nacional",cat:"Impostos",tipo:"saida",valor:920}];
+
+const SVG=(d,w=19)=>React.createElement('svg',{width:w,height:w,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},d);
+const Icons={
+  dashboard:SVG([React.createElement('rect',{key:0,x:3,y:3,width:7,height:7}),React.createElement('rect',{key:1,x:14,y:3,width:7,height:7}),React.createElement('rect',{key:2,x:3,y:14,width:7,height:7}),React.createElement('rect',{key:3,x:14,y:14,width:7,height:7})]),
+  bar:SVG([React.createElement('line',{key:0,x1:18,y1:20,x2:18,y2:10}),React.createElement('line',{key:1,x1:12,y1:20,x2:12,y2:4}),React.createElement('line',{key:2,x1:6,y1:20,x2:6,y2:14})]),
+  alert:SVG([React.createElement('path',{key:0,d:"M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"}),React.createElement('line',{key:1,x1:12,y1:9,x2:12,y2:13}),React.createElement('line',{key:2,x1:12,y1:17,x2:12.01,y2:17})]),
+  pkg:SVG([React.createElement('path',{key:0,d:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"}),React.createElement('polyline',{key:1,points:"3.27 6.96 12 12.01 20.73 6.96"}),React.createElement('line',{key:2,x1:12,y1:22.08,x2:12,y2:12})]),
+  wallet:SVG([React.createElement('path',{key:0,d:"M20 12V22H4a2 2 0 01-2-2V6a2 2 0 012-2h16v4"}),React.createElement('path',{key:1,d:"M22 12a2 2 0 01-2 2h-2a2 2 0 110-4h2a2 2 0 012 2z"})]),
+  trash:SVG([React.createElement('polyline',{key:0,points:"3 6 5 6 21 6"}),React.createElement('path',{key:1,d:"M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"})],15),
+  x:SVG([React.createElement('line',{key:0,x1:18,y1:6,x2:6,y2:18}),React.createElement('line',{key:1,x1:6,y1:6,x2:18,y2:18})],16),
+};
+
+function TipBox({active,payload,label,lines}){
+  if(!active||!payload?.length)return null;
+  const ls=lines||payload.map(p=>({color:p.fill||p.stroke||C.teal,text:`${p.name?p.name+': ':''}${fmt(p.value)}`}));
+  return React.createElement('div',{style:{background:C.card2,border:`1px solid ${C.border}`,borderRadius:10,padding:"8px 12px",fontSize:12}},
+    label&&React.createElement('div',{style:{color:C.text2,marginBottom:4,fontSize:10}},label),
+    ls.map((l,i)=>React.createElement('div',{key:i,className:"mono",style:{color:l.color,fontWeight:700,marginBottom:1}},l.text))
+  );
+}
+
+function KPICard({label,value,sub,dim,alert,negative}){
+  const isA=alert||negative;
+  return React.createElement('div',{className:"kpi-card",style:{background:isA?C.redDim:dim,border:`1px solid ${isA?"rgba(255,71,104,0.25)":C.border}`}},
+    React.createElement('div',{className:"kpi-lbl",style:{color:isA?C.red:C.text2}},label),
+    React.createElement('div',{className:"kpi-val",style:{color:isA?C.red:C.text}},value),
+    sub&&React.createElement('div',{className:"kpi-sub",style:{color:isA?C.red:C.text2}},sub)
+  );
+}
+
+function DelBtn({onClick}){return React.createElement('button',{className:"del-btn",onClick},Icons.trash);}
+
+function DashboardTab({kpis,cmvByLoja,perdasByTipo,topProdutos,fluxoKpis}){
+  const {fat,cmvPct,perdaTotal,margem}=kpis;
+  const {entradas,saidas,saldo}=fluxoKpis;
+  return React.createElement('div',{className:"page"},
+    React.createElement('div',null,React.createElement('div',{className:"lbl"},"Operacional"),
+      React.createElement('div',{className:"kpi2"},
+        React.createElement(KPICard,{label:"FATURAMENTO",value:fmt(fat),sub:"Total CMV",dim:C.tealDim}),
+        React.createElement(KPICard,{label:"CMV MÉDIO",value:pct(cmvPct),sub:cmvPct>0.7?"⚠ Crítico":"Meta ≤70%",dim:C.amberDim,alert:cmvPct>0.7}),
+        React.createElement(KPICard,{label:"PERDA TOTAL",value:fmt(perdaTotal),sub:fat>0?`${pct(perdaTotal/fat)} fat.`:"",dim:C.redDim,alert:fat>0&&perdaTotal/fat>0.03}),
+        React.createElement(KPICard,{label:"MARGEM REAL",value:pct(margem),sub:margem>0.15?"Saudável":"Atenção",dim:margem>0.15?C.tealDim:C.amberDim})
+      )
+    ),
+    React.createElement('div',null,React.createElement('div',{className:"lbl"},"Fluxo de Caixa"),
+      React.createElement('div',{className:"kpi3"},
+        [{l:"ENTRADAS",v:fmt(entradas),c:C.teal,bg:C.tealDim,bc:"rgba(0,212,168,0.2)"},
+         {l:"SAÍDAS",v:fmt(saidas),c:C.red,bg:C.redDim,bc:"rgba(255,71,104,0.2)"},
+         {l:"SALDO",v:fmt(saldo),c:saldo>=0?C.teal:C.red,bg:saldo>=0?C.tealDim:C.redDim,bc:saldo>=0?"rgba(0,212,168,0.2)":"rgba(255,71,104,0.2)"}
+        ].map(({l,v,c,bg,bc})=>React.createElement('div',{key:l,className:"kpi3-item",style:{background:bg,border:`1px solid ${bc}`}},
+          React.createElement('div',{className:"kpi3-lbl",style:{color:c}},l),
+          React.createElement('div',{className:"mono",style:{fontSize:11,fontWeight:700,color:c,wordBreak:"break-all"}},v)
+        ))
+      )
+    ),
+    React.createElement('div',null,React.createElement('div',{className:"lbl"},"CMV por Loja"),
+      React.createElement('div',{className:"card",style:{padding:"14px 4px 10px"}},
+        React.createElement(ResponsiveContainer,{width:"100%",height:170},
+          React.createElement(BarChart,{data:cmvByLoja,margin:{top:4,right:6,left:-22,bottom:0}},
+            React.createElement(XAxis,{dataKey:"loja",tick:{fill:C.text2,fontSize:11},axisLine:false,tickLine:false}),
+            React.createElement(YAxis,{tick:{fill:C.text2,fontSize:9},axisLine:false,tickLine:false,tickFormatter:v=>`${v}%`}),
+            React.createElement(Tooltip,{content:({active,payload,label})=>active&&payload?.length?React.createElement(TipBox,{active,payload,label,lines:[{color:payload[0].fill,text:`CMV: ${payload[0].value}%`}]}):null,cursor:{fill:"rgba(255,255,255,0.03)"}}),
+            React.createElement(Bar,{dataKey:"cmv",radius:[7,7,0,0],maxBarSize:44},cmvByLoja.map((e,i)=>React.createElement(Cell,{key:i,fill:e.cmv>70?C.red:e.cmv>45?C.amber:C.teal})))
+          )
+        ),
+        React.createElement('div',{style:{display:"flex",gap:12,justifyContent:"center",marginTop:6}},
+          [{c:C.teal,l:"≤45%"},{c:C.amber,l:"45–70%"},{c:C.red,l:">70%"}].map(({c,l})=>React.createElement('span',{key:l,style:{display:"flex",alignItems:"center",gap:4,fontSize:10,color:C.text2}},React.createElement('span',{style:{width:7,height:7,borderRadius:2,background:c}}),l))
+        )
+      )
+    ),
+    perdasByTipo.length>0&&React.createElement('div',null,React.createElement('div',{className:"lbl"},"Perdas por Tipo"),
+      React.createElement('div',{className:"card",style:{padding:"14px 4px 12px"}},
+        React.createElement(ResponsiveContainer,{width:"100%",height:148},
+          React.createElement(PieChart,null,
+            React.createElement(Pie,{data:perdasByTipo,cx:"50%",cy:"50%",innerRadius:38,outerRadius:60,paddingAngle:4,dataKey:"value",strokeWidth:0},perdasByTipo.map((_,i)=>React.createElement(Cell,{key:i,fill:PIE_COLORS[i%4]}))),
+            React.createElement(Tooltip,{formatter:v=>fmt(v),contentStyle:{background:C.card2,border:`1px solid ${C.border}`,borderRadius:10,fontSize:12,color:C.text}})
+          )
+        ),
+        React.createElement('div',{style:{display:"flex",flexWrap:"wrap",gap:8,justifyContent:"center"}},
+          perdasByTipo.map((d,i)=>React.createElement('span',{key:d.name,style:{display:"flex",alignItems:"center",gap:4,fontSize:11,color:C.text2}},React.createElement('span',{style:{width:7,height:7,borderRadius:"50%",background:PIE_COLORS[i%4]}}),d.name," ",React.createElement('span',{className:"mono",style:{color:C.text,fontSize:10}},fmt(d.value))))
+        )
+      )
+    ),
+    React.createElement('div',null,React.createElement('div',{className:"lbl"},"Top Produtos (ABC)"),
+      React.createElement('div',{className:"card",style:{padding:"14px 4px 10px"}},
+        React.createElement(ResponsiveContainer,{width:"100%",height:Math.min(topProdutos.length,6)*33+16},
+          React.createElement(BarChart,{data:topProdutos.slice(0,6),layout:"vertical",margin:{top:0,right:34,left:66,bottom:0}},
+            React.createElement(XAxis,{type:"number",tick:{fill:C.text2,fontSize:9},axisLine:false,tickLine:false,tickFormatter:v=>`${(v/1000).toFixed(1)}k`}),
+            React.createElement(YAxis,{type:"category",dataKey:"nome",tick:{fill:C.text2,fontSize:10},axisLine:false,tickLine:false,width:64}),
+            React.createElement(Tooltip,{formatter:v=>fmt(v),contentStyle:{background:C.card2,border:`1px solid ${C.border}`,borderRadius:10,fontSize:12,color:C.text}}),
+            React.createElement(Bar,{dataKey:"vendas",name:"Vendas",radius:[0,6,6,0],maxBarSize:20},topProdutos.slice(0,6).map((e,i)=>React.createElement(Cell,{key:i,fill:e.abc==="A"?C.teal:e.abc==="B"?C.amber:C.text3})))
+          )
+        )
+      )
+    )
+  );
+}
+
+function CMVTab({list,del}){
+  const fat=list.reduce((s,r)=>s+r.fat,0),cmvT=list.reduce((s,r)=>s+r.custo,0),cp=fat>0?cmvT/fat:0;
+  return React.createElement('div',{className:"page"},
+    React.createElement('div',{className:"lbl"},`CMV — ${list.length} registros`),
+    React.createElement('div',{className:"strip"},
+      [{l:"Faturamento",v:fmt(fat),c:C.teal},{l:"CMV Total",v:fmt(cmvT),c:C.amber},{l:"CMV Médio",v:pct(cp),c:cp>0.7?C.red:C.teal}].map(({l,v,c})=>React.createElement('div',{key:l,className:"strip-item"},React.createElement('div',{className:"strip-lbl"},l),React.createElement('div',{className:"mono",style:{fontSize:11,fontWeight:700,color:c}},v)))
+    ),
+    list.length===0&&React.createElement('div',{style:{textAlign:"center",color:C.text2,padding:"60px 0",fontSize:13}},"Toque em + para adicionar."),
+    ...list.map(r=>{const p=r.fat>0?r.custo/r.fat:0,color=p>0.7?C.red:p>0.45?C.amber:C.teal;return React.createElement('div',{key:r.id,className:"card",style:{padding:"13px 14px",borderLeft:`3px solid ${color}`}},React.createElement('div',{style:{display:"flex",justifyContent:"space-between"}},React.createElement('div',{style:{flex:1}},React.createElement('div',{style:{display:"flex",alignItems:"center",gap:6,marginBottom:7,flexWrap:"wrap"}},React.createElement('span',{style:{fontSize:13,fontWeight:600,color:C.text}},r.produto),React.createElement('span',{className:"badge",style:{color:C.blue,background:C.blueDim}},r.loja),React.createElement('span',{style:{fontSize:10,color:C.text2}},r.mes)),React.createElement('div',{style:{display:"flex",gap:14}},React.createElement('div',null,React.createElement('div',{style:{fontSize:10,color:C.text2,marginBottom:2}},"Fat."),React.createElement('div',{className:"mono",style:{fontSize:11,color:C.text}},fmt(r.fat))),React.createElement('div',null,React.createElement('div',{style:{fontSize:10,color:C.text2,marginBottom:2}},"CMV R$"),React.createElement('div',{className:"mono",style:{fontSize:11,color:C.text}},fmt(r.custo))),React.createElement('div',null,React.createElement('div',{style:{fontSize:10,color:C.text2,marginBottom:2}},"CMV %"),React.createElement('div',{className:"mono",style:{fontSize:15,fontWeight:700,color}},pct(p))))),React.createElement(DelBtn,{onClick:()=>del(r.id)})));})
+  );
+}
+
+function PerdasTab({list,del}){
+  const tm={Furto:{color:C.red,dim:C.redDim},Vencimento:{color:C.amber,dim:C.amberDim},Erro:{color:C.blue,dim:C.blueDim},Quebra:{color:C.orange,dim:C.orangeDim}};
+  const total=list.reduce((s,r)=>s+r.qtd*r.custo,0);
+  return React.createElement('div',{className:"page"},
+    React.createElement('div',{className:"lbl"},`Perdas — ${list.length} ocorrências`),
+    React.createElement('div',{style:{background:C.redDim,border:"1px solid rgba(255,71,104,0.2)",borderRadius:12,padding:"12px 16px",marginBottom:4,display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement('span',{style:{fontSize:12,color:C.red,fontWeight:600}},"Total Perdas"),React.createElement('span',{className:"mono",style:{fontSize:17,fontWeight:700,color:C.red}},fmt(total))),
+    list.length===0&&React.createElement('div',{style:{textAlign:"center",color:C.text2,padding:"60px 0",fontSize:13}},"Toque em + para registrar."),
+    ...list.map(r=>{const tot=r.qtd*r.custo,{color,dim}=tm[r.tipo]||{color:C.text2,dim:C.card2};return React.createElement('div',{key:r.id,className:"card",style:{padding:"13px 14px",borderLeft:`3px solid ${color}`}},React.createElement('div',{style:{display:"flex",justifyContent:"space-between"}},React.createElement('div',{style:{flex:1}},React.createElement('div',{style:{display:"flex",alignItems:"center",gap:6,marginBottom:7,flexWrap:"wrap"}},React.createElement('span',{style:{fontSize:13,fontWeight:600,color:C.text}},r.produto),React.createElement('span',{className:"badge",style:{color,background:dim}},r.tipo),React.createElement('span',{style:{fontSize:10,color:C.text2}},r.loja)),React.createElement('div',{style:{display:"flex",gap:14}},React.createElement('div',null,React.createElement('div',{style:{fontSize:10,color:C.text2,marginBottom:2}},"Qtd"),React.createElement('div',{className:"mono",style:{fontSize:12,color:C.text}},`${r.qtd}×`)),React.createElement('div',null,React.createElement('div',{style:{fontSize:10,color:C.text2,marginBottom:2}},"Unit."),React.createElement('div',{className:"mono",style:{fontSize:11,color:C.text}},fmt(r.custo))),React.createElement('div',null,React.createElement('div',{style:{fontSize:10,color:C.text2,marginBottom:2}},"Total"),React.createElement('div',{className:"mono",style:{fontSize:15,fontWeight:700,color}},fmt(tot))))),React.createElement(DelBtn,{onClick:()=>del(r.id)})));})
+  );
+}
+
+function ProdutosTab({list,del}){
+  const am={A:{color:C.teal,dim:C.tealDim},B:{color:C.amber,dim:C.amberDim},C:{color:C.text2,dim:C.card2}};
+  return React.createElement('div',{className:"page"},
+    React.createElement('div',{className:"lbl"},`Produtos — Curva ABC (${list.length})`),
+    ...list.map(p=>{const mg=p.vendas>0?(p.vendas-p.custo)/p.vendas:0,{color,dim}=am[p.abc]||am["C"];return React.createElement('div',{key:p.id,className:"card",style:{padding:"13px 14px"}},React.createElement('div',{style:{display:"flex",justifyContent:"space-between"}},React.createElement('div',{style:{flex:1}},React.createElement('div',{style:{display:"flex",alignItems:"center",gap:6,marginBottom:7,flexWrap:"wrap"}},React.createElement('span',{style:{fontSize:13,fontWeight:600,color:C.text}},p.nome),React.createElement('span',{className:"badge",style:{color,background:dim}},`Curva ${p.abc}`),p.cat&&React.createElement('span',{style:{fontSize:10,color:C.text2}},p.cat)),React.createElement('div',{style:{height:4,background:C.text3,borderRadius:2,overflow:"hidden",marginBottom:8}},React.createElement('div',{style:{height:"100%",width:`${Math.min((p.vendas/2200)*100,100)}%`,background:color,borderRadius:2}})),React.createElement('div',{style:{display:"flex",gap:14}},React.createElement('div',null,React.createElement('div',{style:{fontSize:10,color:C.text2,marginBottom:2}},"Vendas"),React.createElement('div',{className:"mono",style:{fontSize:11,color:C.text}},fmt(p.vendas))),React.createElement('div',null,React.createElement('div',{style:{fontSize:10,color:C.text2,marginBottom:2}},"Custo"),React.createElement('div',{className:"mono",style:{fontSize:11,color:C.text}},fmt(p.custo))),React.createElement('div',null,React.createElement('div',{style:{fontSize:10,color:C.text2,marginBottom:2}},"Margem"),React.createElement('div',{className:"mono",style:{fontSize:14,fontWeight:700,color:mg>0.3?C.teal:C.amber}},pct(mg))))),React.createElement(DelBtn,{onClick:()=>del(p.id)})));})
+  );
+}
+
+function CaixaTab({list,del}){
+  const [filtro,setFiltro]=useState("todos");
+  const entradas=list.filter(r=>r.tipo==="entrada").reduce((s,r)=>s+r.valor,0);
+  const saidas=list.filter(r=>r.tipo==="saida").reduce((s,r)=>s+r.valor,0);
+  const saldo=entradas-saidas;
+  const porMes=useMemo(()=>{const m={};list.forEach(r=>{const pts=r.data.split("/"),key=pts.length>=3?`${pts[1]}/${pts[2].slice(-2)}`:"?";if(!m[key])m[key]={mes:key,entradas:0,saidas:0};r.tipo==="entrada"?m[key].entradas+=r.valor:m[key].saidas+=r.valor;});return Object.values(m);},[list]);
+  const saldoAcc=useMemo(()=>{const sorted=[...list].sort((a,b)=>{const pa=a.data.split("/"),pb=b.data.split("/");return new Date(`${pa[2]}-${pa[1]}-${pa[0]}`)-new Date(`${pb[2]}-${pb[1]}-${pb[0]}`);});let acc=0;return sorted.map(r=>{acc+=r.tipo==="entrada"?r.valor:-r.valor;return{data:r.data.slice(0,5),saldo:+acc.toFixed(2)};});},[list]);
+  const porCat=useMemo(()=>{const m={};list.forEach(r=>{m[r.cat]=(m[r.cat]||0)+r.valor;});return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,5);},[list]);
+  const shown=[...list.filter(r=>filtro==="todos"||r.tipo===filtro)].sort((a,b)=>{const pa=a.data.split("/"),pb=b.data.split("/");return new Date(`${pb[2]}-${pb[1]}-${pb[0]}`)-new Date(`${pa[2]}-${pa[1]}-${pa[0]}`);});
+  return React.createElement('div',{className:"page"},
+    React.createElement('div',{className:"lbl"},`Fluxo de Caixa — ${list.length} lançamentos`),
+    React.createElement('div',{className:"kpi3"},[{l:"ENTRADAS",v:fmt(entradas),c:C.teal,bg:C.tealDim,bc:"rgba(0,212,168,0.2)"},{l:"SAÍDAS",v:fmt(saidas),c:C.red,bg:C.redDim,bc:"rgba(255,71,104,0.2)"},{l:"SALDO",v:fmt(saldo),c:saldo>=0?C.teal:C.red,bg:saldo>=0?C.tealDim:C.redDim,bc:saldo>=0?"rgba(0,212,168,0.2)":"rgba(255,71,104,0.2)"}].map(({l,v,c,bg,bc})=>React.createElement('div',{key:l,className:"kpi3-item",style:{background:bg,border:`1px solid ${bc}`}},React.createElement('div',{className:"kpi3-lbl",style:{color:c}},l),React.createElement('div',{className:"mono",style:{fontSize:11,fontWeight:700,color:c,wordBreak:"break-all"}},v)))),
+    saldoAcc.length>1&&React.createElement('div',null,React.createElement('div',{className:"lbl"},"Saldo Acumulado"),React.createElement('div',{className:"card",style:{padding:"14px 4px 10px"}},React.createElement(ResponsiveContainer,{width:"100%",height:145},React.createElement(AreaChart,{data:saldoAcc,margin:{top:4,right:6,left:-20,bottom:0}},React.createElement('defs',null,React.createElement('linearGradient',{id:"gT",x1:"0",y1:"0",x2:"0",y2:"1"},React.createElement('stop',{offset:"5%",stopColor:C.teal,stopOpacity:0.3}),React.createElement('stop',{offset:"95%",stopColor:C.teal,stopOpacity:0.02}))),React.createElement(CartesianGrid,{strokeDasharray:"3 3",stroke:C.text3,vertical:false}),React.createElement(XAxis,{dataKey:"data",tick:{fill:C.text2,fontSize:9},axisLine:false,tickLine:false,interval:"preserveStartEnd"}),React.createElement(YAxis,{tick:{fill:C.text2,fontSize:9},axisLine:false,tickLine:false,tickFormatter:v=>`${(v/1000).toFixed(0)}k`}),React.createElement(Tooltip,{content:({active,payload,label})=>{if(!active||!payload?.length)return null;const v=payload[0].value;return React.createElement(TipBox,{active,payload,label,lines:[{color:v>=0?C.teal:C.red,text:fmt(v)}]});}}),React.createElement(ReferenceLine,{y:0,stroke:C.text3,strokeDasharray:"4 4"}),React.createElement(Area,{type:"monotone",dataKey:"saldo",stroke:C.teal,strokeWidth:2,fill:"url(#gT)",dot:false}))))),
+    porMes.length>0&&React.createElement('div',null,React.createElement('div',{className:"lbl"},"Entradas × Saídas por Mês"),React.createElement('div',{className:"card",style:{padding:"14px 4px 10px"}},React.createElement(ResponsiveContainer,{width:"100%",height:165},React.createElement(BarChart,{data:porMes,margin:{top:4,right:6,left:-20,bottom:0},barGap:3},React.createElement(XAxis,{dataKey:"mes",tick:{fill:C.text2,fontSize:10},axisLine:false,tickLine:false}),React.createElement(YAxis,{tick:{fill:C.text2,fontSize:9},axisLine:false,tickLine:false,tickFormatter:v=>`${(v/1000).toFixed(0)}k`}),React.createElement(Tooltip,{content:({active,payload,label})=>active&&payload?.length?React.createElement(TipBox,{active,payload,label}):null}),React.createElement(Bar,{dataKey:"entradas",name:"Entradas",radius:[5,5,0,0],fill:C.teal,maxBarSize:24}),React.createElement(Bar,{dataKey:"saidas",name:"Saídas",radius:[5,5,0,0],fill:C.red,maxBarSize:24}))),React.createElement('div',{style:{display:"flex",gap:14,justifyContent:"center",marginTop:6}},[{c:C.teal,l:"Entradas"},{c:C.red,l:"Saídas"}].map(({c,l})=>React.createElement('span',{key:l,style:{display:"flex",alignItems:"center",gap:4,fontSize:10,color:C.text2}},React.createElement('span',{style:{width:7,height:7,borderRadius:2,background:c}}),l))))),
+    porCat.length>0&&React.createElement('div',null,React.createElement('div',{className:"lbl"},"Top Categorias"),React.createElement('div',{className:"card",style:{padding:"14px 16px"}},porCat.map(([cat,val],i)=>{const max=porCat[0][1],cols=[C.teal,C.amber,C.blue,C.orange,"#A78BFA"];return React.createElement('div',{key:cat,style:{marginBottom:i<porCat.length-1?12:0}},React.createElement('div',{style:{display:"flex",justifyContent:"space-between",marginBottom:5}},React.createElement('span',{style:{fontSize:12,color:C.text}},cat),React.createElement('span',{className:"mono",style:{fontSize:12,fontWeight:700,color:C.text}},fmt(val))),React.createElement('div',{style:{height:4,background:C.text3,borderRadius:2,overflow:"hidden"}},React.createElement('div',{style:{height:"100%",width:`${(val/max)*100}%`,background:cols[i%5],borderRadius:2}})))}))),
+    React.createElement('div',null,
+      React.createElement('div',{className:"filter-bar"},[{id:"todos",l:"Todos"},{id:"entrada",l:"⬇ Entradas"},{id:"saida",l:"⬆ Saídas"}].map(({id,l})=>React.createElement('button',{key:id,className:"filter-btn",onClick:()=>setFiltro(id),style:{background:filtro===id?(id==="entrada"?C.teal:id==="saida"?C.red:C.blue):C.card2,color:filtro===id?"#001F18":C.text2}},l))),
+      shown.length===0&&React.createElement('div',{style:{textAlign:"center",color:C.text2,padding:"40px 0",fontSize:13}},"Nenhum lançamento."),
+      React.createElement('div',{style:{display:"flex",flexDirection:"column",gap:8}},shown.map(r=>{const isE=r.tipo==="entrada";return React.createElement('div',{key:r.id,className:"card",style:{padding:"12px 14px",borderLeft:`3px solid ${isE?C.teal:C.red}`}},React.createElement('div',{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement('div',{style:{flex:1}},React.createElement('div',{style:{display:"flex",alignItems:"center",gap:6,marginBottom:5,flexWrap:"wrap"}},React.createElement('span',{style:{fontSize:13,fontWeight:600,color:C.text}},r.desc),React.createElement('span',{className:"badge",style:{color:isE?C.teal:C.red,background:isE?C.tealDim:C.redDim}},r.cat)),React.createElement('div',{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},React.createElement('span',{style:{fontSize:11,color:C.text2}},r.data),React.createElement('span',{className:"mono",style:{fontSize:15,fontWeight:700,color:isE?C.teal:C.red}},`${isE?"+":"−"}${fmt(r.valor)}`))),React.createElement(DelBtn,{onClick:()=>del(r.id)})));})
+      )
+    )
+  );
+}
+
+function Modal({modal,form,f,onClose,onSave}){
+  const inp={width:"100%",background:C.card2,border:`1px solid ${C.border}`,borderRadius:10,padding:"12px 14px",color:C.text,fontSize:15,outline:"none",WebkitAppearance:"none"};
+  const Lbl=({t})=>React.createElement('label',{className:"field-label"},t);
+  const Field=({name,k,type="text",opts})=>React.createElement('div',null,React.createElement(Lbl,{t:name}),opts?React.createElement('select',{value:form[k]||"",onChange:e=>f(k,e.target.value),style:inp},React.createElement('option',{value:""},"Selecionar..."),opts.map(o=>React.createElement('option',{key:o,value:o},o))):React.createElement('input',{type,value:form[k]||"",onChange:e=>f(k,e.target.value),style:inp,placeholder:type==="number"?"0,00":"",inputMode:type==="number"?"decimal":"text"}));
+  const titles={cmv:"Lançamento CMV",perdas:"Registrar Perda",produtos:"Cadastrar Produto",caixa:"Lançamento de Caixa"};
+  const catOpts=form.tipoCaixa==="saida"?CAT_S:CAT_E;
+  let fields=null;
+  if(modal==="cmv")fields=React.createElement(React.Fragment,null,React.createElement(Field,{name:"Loja",k:"loja",opts:LOJAS}),React.createElement(Field,{name:"Mês",k:"mes",opts:MESES}),React.createElement(Field,{name:"Produto",k:"produto"}),React.createElement(Field,{name:"Custo (R$)",k:"custo",type:"number"}),React.createElement(Field,{name:"Faturamento (R$)",k:"fat",type:"number"}),form.custo&&form.fat&&+form.fat>0&&React.createElement('div',{className:"preview-box",style:{background:C.card2,border:`1px solid ${C.border}`}},React.createElement('div',{style:{fontSize:11,color:C.text2,marginBottom:4}},"CMV calculado"),React.createElement('div',{className:"mono",style:{fontSize:22,fontWeight:700,color:(+form.custo/+form.fat)>0.7?C.red:C.teal}},pct(+form.custo/+form.fat))));
+  if(modal==="perdas")fields=React.createElement(React.Fragment,null,React.createElement(Field,{name:"Loja",k:"loja",opts:LOJAS}),React.createElement(Field,{name:"Produto",k:"produto"}),React.createElement(Field,{name:"Quantidade",k:"qtd",type:"number"}),React.createElement(Field,{name:"Custo Unit. (R$)",k:"custo",type:"number"}),React.createElement(Field,{name:"Tipo de Perda",k:"tipo",opts:TIPOS_P}),form.qtd&&form.custo&&React.createElement('div',{className:"preview-box",style:{background:C.redDim,border:"1px solid rgba(255,71,104,0.2)"}},React.createElement('div',{style:{fontSize:11,color:C.red,marginBottom:4}},"Total da Perda"),React.createElement('div',{className:"mono",style:{fontSize:22,fontWeight:700,color:C.red}},fmt(+form.qtd*+form.custo))));
+  if(modal==="produtos")fields=React.createElement(React.Fragment,null,React.createElement(Field,{name:"Nome",k:"nome"}),React.createElement(Field,{name:"Vendas (R$)",k:"vendas",type:"number"}),React.createElement(Field,{name:"Custo (R$)",k:"custo",type:"number"}),React.createElement(Field,{name:"Categoria",k:"cat"}),form.vendas&&form.custo&&+form.vendas>0&&React.createElement('div',{className:"preview-box",style:{background:C.tealDim,border:"1px solid rgba(0,212,168,0.2)"}},React.createElement('div',{style:{fontSize:11,color:C.teal,marginBottom:4}},"Margem"),React.createElement('div',{className:"mono",style:{fontSize:22,fontWeight:700,color:C.teal}},pct((+form.vendas-+form.custo)/+form.vendas))));
+  if(modal==="caixa")fields=React.createElement(React.Fragment,null,React.createElement('div',null,React.createElement(Lbl,{t:"Tipo"}),React.createElement('div',{className:"tipo-toggle"},["entrada","saida"].map(t=>React.createElement('button',{key:t,className:"tipo-btn",onClick:()=>f("tipoCaixa",t),style:{border:`1px solid ${form.tipoCaixa===t?(t==="entrada"?C.teal:C.red):C.border}`,background:form.tipoCaixa===t?(t==="entrada"?C.tealDim:C.redDim):C.card2,color:form.tipoCaixa===t?(t==="entrada"?C.teal:C.red):C.text2}},t==="entrada"?"⬇ Entrada":"⬆ Saída")))),React.createElement(Field,{name:"Descrição",k:"desc"}),React.createElement(Field,{name:"Data (DD/MM/AAAA)",k:"data"}),React.createElement(Field,{name:"Categoria",k:"cat",opts:catOpts}),React.createElement(Field,{name:"Valor (R$)",k:"valor",type:"number"}),form.valor&&+form.valor>0&&React.createElement('div',{className:"preview-box",style:{background:form.tipoCaixa==="saida"?C.redDim:C.tealDim,border:`1px solid ${form.tipoCaixa==="saida"?"rgba(255,71,104,0.2)":"rgba(0,212,168,0.2)"}`}},React.createElement('div',{style:{fontSize:11,color:form.tipoCaixa==="saida"?C.red:C.teal,marginBottom:4}},form.tipoCaixa==="saida"?"Saída":"Entrada"," confirmada"),React.createElement('div',{className:"mono",style:{fontSize:22,fontWeight:700,color:form.tipoCaixa==="saida"?C.red:C.teal}},`${form.tipoCaixa==="saida"?"−":"+"} ${fmt(+form.valor)}`)));
+  return React.createElement('div',{className:"modal-bg"},React.createElement('div',{className:"modal"},React.createElement('div',{className:"modal-handle"}),React.createElement('div',{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}},React.createElement('h3',{style:{margin:0,fontSize:16,fontWeight:700,color:C.text}},titles[modal]),React.createElement('button',{className:"close-btn",onClick:onClose},Icons.x)),React.createElement('div',{style:{display:"flex",flexDirection:"column",gap:13}},fields),React.createElement('button',{className:"save-btn",onClick:onSave},"Salvar Registro")));
+}
+
+function BottomNav({tab,setTab}){
+  const tabs=[{id:"dashboard",label:"Home",icon:Icons.dashboard},{id:"cmv",label:"CMV",icon:Icons.bar},{id:"perdas",label:"Perdas",icon:Icons.alert},{id:"produtos",label:"Prods",icon:Icons.pkg},{id:"caixa",label:"Caixa",icon:Icons.wallet}];
+  return React.createElement('div',{className:"nav"},tabs.map(({id,label,icon})=>{const active=tab===id;return React.createElement('button',{key:id,className:"nav-btn",onClick:()=>setTab(id)},active&&React.createElement('div',{style:{width:18,height:2,background:C.teal,borderRadius:1,marginBottom:1}}),React.createElement('div',{style:{color:active?C.teal:C.text2}},icon),React.createElement('span',{className:"nav-label",style:{color:active?C.teal:C.text2,fontWeight:active?700:400}},label));}));
+}
+
+function App(){
+  const [tab,setTab]=useState("dashboard");
+  const [modal,setModal]=useState(null);
+  const [cmv,setCmv]=useState(INIT_CMV);
+  const [perdas,setPerdas]=useState(INIT_PERDAS);
+  const [prods,setProds]=useState(INIT_PRODS);
+  const [caixa,setCaixa]=useState(INIT_CAIXA);
+  const [form,setForm]=useState({});
+  const [nextId,setNextId]=useState(300);
+  const f=(k,v)=>setForm(p=>({...p,[k]:v}));
+  const kpis=useMemo(()=>{const fat=cmv.reduce((s,r)=>s+r.fat,0),cmvT=cmv.reduce((s,r)=>s+r.custo,0),cmvPct=fat>0?cmvT/fat:0,perdaTotal=perdas.reduce((s,r)=>s+r.qtd*r.custo,0);return{fat,cmvPct,perdaTotal,margem:fat>0?1-cmvPct-perdaTotal/fat:0};},[cmv,perdas]);
+  const fluxoKpis=useMemo(()=>{const entradas=caixa.filter(r=>r.tipo==="entrada").reduce((s,r)=>s+r.valor,0),saidas=caixa.filter(r=>r.tipo==="saida").reduce((s,r)=>s+r.valor,0);return{entradas,saidas,saldo:entradas-saidas};},[caixa]);
+  const cmvByLoja=useMemo(()=>{const m={};cmv.forEach(r=>{if(!m[r.loja])m[r.loja]={fat:0,custo:0};m[r.loja].fat+=r.fat;m[r.loja].custo+=r.custo;});return Object.entries(m).map(([loja,v])=>({loja,cmv:+(v.fat>0?(v.custo/v.fat)*100:0).toFixed(1)}));},[cmv]);
+  const perdasByTipo=useMemo(()=>{const m={};perdas.forEach(r=>{m[r.tipo]=(m[r.tipo]||0)+r.qtd*r.custo;});return Object.entries(m).map(([name,value])=>({name,value:+value.toFixed(2)}));},[perdas]);
+  const topProdutos=useMemo(()=>{const s=[...prods].sort((a,b)=>b.vendas-a.vendas),tot=s.reduce((x,p)=>x+p.vendas,0);let acc=0;return s.map(p=>{acc+=p.vendas;return{...p,abc:acc/tot<=0.5?"A":acc/tot<=0.8?"B":"C"};});},[prods]);
+  const save=()=>{const id=nextId;setNextId(id+1);if(modal==="cmv")setCmv(p=>[...p,{id,loja:form.loja||"Loja A",mes:form.mes||"Abr/25",produto:form.produto||"Produto",custo:+form.custo||0,fat:+form.fat||0}]);else if(modal==="perdas")setPerdas(p=>[...p,{id,loja:form.loja||"Loja A",produto:form.produto||"Produto",qtd:+form.qtd||0,custo:+form.custo||0,tipo:form.tipo||"Erro"}]);else if(modal==="produtos")setProds(p=>[...p,{id,nome:form.nome||"Produto",vendas:+form.vendas||0,custo:+form.custo||0,cat:form.cat||""}]);else if(modal==="caixa")setCaixa(p=>[...p,{id,data:form.data||"01/04/25",desc:form.desc||"Lançamento",cat:form.cat||"Outros",tipo:form.tipoCaixa||"entrada",valor:+form.valor||0}]);setModal(null);setForm({});};
+  const subtitle={dashboard:"Visão Geral",cmv:"Custo da Mercadoria",perdas:"Controle de Perdas",produtos:"Curva ABC",caixa:"Fluxo de Caixa"};
+  return React.createElement('div',{style:{background:C.bg,minHeight:"100vh",color:C.text}},
+    React.createElement('div',{className:"hdr"},React.createElement('div',{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-end"}},React.createElement('div',null,React.createElement('div',{style:{fontSize:9,color:C.text2,letterSpacing:".14em",textTransform:"uppercase",marginBottom:2,fontWeight:700}},subtitle[tab]),React.createElement('div',{style:{fontSize:19,fontWeight:700,color:C.text,letterSpacing:"-.5px"}},"Dashboard CMV")),React.createElement('div',{style:{textAlign:"right"}},React.createElement('div',{style:{fontSize:9,color:C.text2,marginBottom:1}},"Saldo Caixa"),React.createElement('div',{className:"mono",style:{fontSize:13,fontWeight:700,color:fluxoKpis.saldo>=0?C.teal:C.red}},fmt(fluxoKpis.saldo))))),
+    React.createElement('div',{style:{paddingBottom:82}},tab==="dashboard"&&React.createElement(DashboardTab,{kpis,cmvByLoja,perdasByTipo,topProdutos,fluxoKpis}),tab==="cmv"&&React.createElement(CMVTab,{list:cmv,del:id=>setCmv(p=>p.filter(r=>r.id!==id))}),tab==="perdas"&&React.createElement(PerdasTab,{list:perdas,del:id=>setPerdas(p=>p.filter(r=>r.id!==id))}),tab==="produtos"&&React.createElement(ProdutosTab,{list:topProdutos,del:id=>setProds(p=>p.filter(r=>r.id!==id))}),tab==="caixa"&&React.createElement(CaixaTab,{list:caixa,del:id=>setCaixa(p=>p.filter(r=>r.id!==id))})),
+    tab!=="dashboard"&&React.createElement('button',{className:"fab",onClick:()=>{setForm({});setModal(tab);}},"＋"),
+    React.createElement(BottomNav,{tab,setTab}),
+    modal&&React.createElement(Modal,{modal,form,f,onClose:()=>{setModal(null);setForm({});},onSave:save})
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
